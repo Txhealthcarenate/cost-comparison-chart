@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cost Comparison Chart</title>
+    <script src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/recharts/umd/Recharts.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="module">
+        const { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } = Recharts;
+
+        const CostComparisonChart = () => {
+            const data = [
+                {
+                    name: 'Previous VMC',
+                    'VMC Cluster': 470000,
+                    'Network Charges': 12600,
+                    'Supplemental AWS Environment': 496800,
+                    total: 979400,
+                },
+                {
+                    name: 'Renewed VMC',
+                    'VMC Cluster': 916760,
+                    'Network Charges': 12600,
+                    'Supplemental AWS Environment': 496800,
+                    total: 1426160,
+                },
+                {
+                    name: 'Current AWS',
+                    'AWS Native Cost': 1296498,
+                    total: 1296498,
+                },
+                {
+                    name: 'Optimized AWS',
+                    'AWS Native Cost': 1027056,
+                    total: 1027056,
+                }
+            ];
+
+            const formatCurrency = (value) => {
+                return `$${value.toLocaleString()}`;
+            };
+
+            const CustomTooltip = ({ active, payload, label }) => {
+                if (active && payload && payload.length > 0) {
+                    const totalValue = payload.reduce((sum, entry) => sum + (entry.value || 0), 0);
+                    
+                    return (
+                        React.createElement('div', { 
+                            className: 'bg-white p-4 border border-gray-200 shadow-lg'
+                        }, [
+                            React.createElement('p', { 
+                                className: 'font-bold mb-2',
+                                key: 'label'
+                            }, label),
+                            ...payload.map((entry, index) => 
+                                React.createElement('p', { 
+                                    key: index,
+                                    style: { color: entry.color }
+                                }, `${entry.name}: ${formatCurrency(entry.value)}`)
+                            ),
+                            React.createElement('p', { 
+                                className: 'font-bold mt-2 border-t pt-2',
+                                key: 'total'
+                            }, `Total: ${formatCurrency(totalValue)}`)
+                        ])
+                    );
+                }
+                return null;
+            };
+
+            return React.createElement(
+                'div',
+                { className: 'w-full h-96 p-4' },
+                React.createElement(
+                    ResponsiveContainer,
+                    { width: '100%', height: '100%' },
+                    React.createElement(
+                        BarChart,
+                        {
+                            data: data,
+                            margin: {
+                                top: 20,
+                                right: 30,
+                                left: 20,
+                                bottom: 5,
+                            },
+                        },
+                        [
+                            React.createElement(CartesianGrid, { strokeDasharray: '3 3', key: 'grid' }),
+                            React.createElement(XAxis, { dataKey: 'name', key: 'xAxis' }),
+                            React.createElement(YAxis, { tickFormatter: formatCurrency, key: 'yAxis' }),
+                            React.createElement(Tooltip, { content: CustomTooltip, key: 'tooltip' }),
+                            React.createElement(Legend, { key: 'legend' }),
+                            React.createElement(Bar, { dataKey: 'VMC Cluster', fill: '#8884d8', stackId: 'a', key: 'vmc' }),
+                            React.createElement(Bar, { dataKey: 'Network Charges', fill: '#82ca9d', stackId: 'a', key: 'network' }),
+                            React.createElement(Bar, { dataKey: 'Supplemental AWS Environment', fill: '#ffc658', stackId: 'a', key: 'aws-sup' }),
+                            React.createElement(Bar, { dataKey: 'AWS Native Cost', fill: '#ff7300', stackId: 'a', key: 'aws-native' })
+                        ]
+                    )
+                )
+            );
+        };
+
+        const App = () => {
+            return React.createElement(CostComparisonChart);
+        };
+
+        ReactDOM.render(
+            React.createElement(App),
+            document.getElementById('root')
+        );
+    </script>
+</body>
+</html>
