@@ -1,110 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cost Comparison Chart</title>
-    <!-- Use specific versions that are known to work together -->
-    <script src="https://unpkg.com/react@17.0.2/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@17.0.2/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/prop-types@15.7.2/prop-types.min.js"></script>
-    <script src="https://unpkg.com/recharts@2.1.0/umd/Recharts.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-      body { 
-        margin: 0; 
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; 
-      }
-      #root { 
-        width: 100%; 
-        max-width: 1200px; 
-        margin: 0 auto; 
-        padding: 20px; 
-      }
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 20px; 
+        }
+        #chartContainer {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
     </style>
-  </head>
-  <body>
-    <div id="root">Loading...</div>
+</head>
+<body>
+    <h1>Cost Comparison Analysis</h1>
+    <div id="chartContainer">
+        <canvas id="costChart"></canvas>
+    </div>
 
     <script>
-      // Simplified version without Babel to reduce complexity
-      const { 
-        BarChart, 
-        Bar, 
-        XAxis, 
-        YAxis, 
-        CartesianGrid, 
-        Tooltip, 
-        Legend, 
-        ResponsiveContainer 
-      } = Recharts;
+        // Cost data
+        const data = {
+            labels: ['Previous VMC', 'Renewed VMC', 'Current AWS', 'Optimized AWS'],
+            datasets: [
+                {
+                    label: 'VMC Cluster',
+                    data: [470000, 916760, 0, 0],
+                    backgroundColor: '#8884d8'
+                },
+                {
+                    label: 'Network Charges',
+                    data: [12600, 12600, 0, 0],
+                    backgroundColor: '#82ca9d'
+                },
+                {
+                    label: 'Supplemental AWS Environment',
+                    data: [496800, 496800, 0, 0],
+                    backgroundColor: '#ffc658'
+                },
+                {
+                    label: 'AWS Native Cost',
+                    data: [0, 0, 1296498, 1027056],
+                    backgroundColor: '#ff7300'
+                }
+            ]
+        };
 
-      function CostComparisonChart() {
-        const data = [
-          {
-            name: 'Previous VMC',
-            'VMC Cluster': 470000,
-            'Network Charges': 12600,
-            'Supplemental AWS Environment': 496800,
-            total: 979400,
-          },
-          {
-            name: 'Renewed VMC',
-            'VMC Cluster': 916760,
-            'Network Charges': 12600,
-            'Supplemental AWS Environment': 496800,
-            total: 1426160,
-          },
-          {
-            name: 'Current AWS',
-            'AWS Native Cost': 1296498,
-            total: 1296498,
-          },
-          {
-            name: 'Optimized AWS',
-            'AWS Native Cost': 1027056,
-            total: 1027056,
-          },
-        ];
+        // Chart configuration
+        const config = {
+            type: 'bar',
+            data: data,
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Cost Comparison Breakdown'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.dataset.label}: $${context.parsed.y.toLocaleString()}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + value.toLocaleString();
+                            }
+                        }
+                    }
+                }
+            }
+        };
 
-        function formatCurrency(value) {
-          return `$${value.toLocaleString()}`;
-        }
-
-        return React.createElement(
-          'div',
-          { style: { width: '100%', height: '400px', padding: '20px' } },
-          React.createElement('h1', { style: { textAlign: 'center', marginBottom: '20px' } }, 'Cost Comparison Analysis'),
-          React.createElement(
-            ResponsiveContainer,
-            { width: '100%', height: '100%' },
-            React.createElement(
-              BarChart,
-              { 
-                data: data,
-                margin: { top: 20, right: 30, left: 20, bottom: 5 }
-              },
-              React.createElement(CartesianGrid, { strokeDasharray: "3 3" }),
-              React.createElement(XAxis, { dataKey: "name" }),
-              React.createElement(YAxis, { tickFormatter: formatCurrency }),
-              React.createElement(Tooltip),
-              React.createElement(Legend),
-              React.createElement(Bar, { dataKey: "VMC Cluster", fill: "#8884d8", stackId: "a" }),
-              React.createElement(Bar, { dataKey: "Network Charges", fill: "#82ca9d", stackId: "a" }),
-              React.createElement(Bar, { dataKey: "Supplemental AWS Environment", fill: "#ffc658", stackId: "a" }),
-              React.createElement(Bar, { dataKey: "AWS Native Cost", fill: "#ff7300", stackId: "a" })
-            )
-          )
-        );
-      }
-
-      ReactDOM.render(
-        React.createElement(
-          React.StrictMode,
-          null,
-          React.createElement(CostComparisonChart)
-        ),
-        document.getElementById('root')
-      );
+        // Render the chart
+        window.addEventListener('load', () => {
+            const ctx = document.getElementById('costChart').getContext('2d');
+            new Chart(ctx, config);
+        });
     </script>
-  </body>
+</body>
 </html>
