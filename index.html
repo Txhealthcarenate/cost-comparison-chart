@@ -4,14 +4,27 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Cost Comparison Chart</title>
-    <script src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
-    <script src="https://unpkg.com/recharts@2.1.9/umd/Recharts.js"></script>
+    <!-- Use more recent versions of libraries -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/recharts@2.5.0/umd/Recharts.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body { 
+        margin: 0; 
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; 
+      }
+      #root { 
+        width: 100%; 
+        max-width: 1200px; 
+        margin: 0 auto; 
+        padding: 20px; 
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">Loading...</div>
 
     <script type="text/babel">
       const { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } = Recharts;
@@ -71,6 +84,7 @@
 
         return (
           <div className="w-full h-96 p-4">
+            <h1 className="text-2xl font-bold text-center mb-4">Cost Comparison Analysis</h1>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
                 data={data}
@@ -98,14 +112,13 @@
         );
       };
 
-      ReactDOM.render(
+      const root = ReactDOM.createRoot(document.getElementById('root'));
+      root.render(
         <React.StrictMode>
           <div className="container mx-auto px-4">
-            <h1 className="text-2xl font-bold text-center my-6">Cost Comparison Analysis</h1>
             <CostComparisonChart />
           </div>
-        </React.StrictMode>,
-        document.getElementById('root')
+        </React.StrictMode>
       );
     </script>
   </body>
